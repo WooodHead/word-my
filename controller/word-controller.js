@@ -1,5 +1,6 @@
 var mongoose = require('mongoose');
-var WordModel = require('../model/ecdict.js');
+var WordModel = require('../model/word-model.js');
+var co = require('co');
 
 var controller = {};
 controller.index = function (req, res, next) {
@@ -8,7 +9,6 @@ controller.index = function (req, res, next) {
 
   var word = req.query.word;
   word = word.toLowerCase();
-  // console.log('word', word);
 
   WordModel.findOne({
     word: word
@@ -27,5 +27,18 @@ controller.index = function (req, res, next) {
 
   });
 };
+
+var Word = mongoose.model('Ecdicts');
+
+controller.list = co.wrap(function* (req, res) {
+
+  console.log('controller.list')
+  var words = yield Word.list({});
+  // res.render('list',{words:['11','222']})
+  res.render('list', {
+    words: words
+  });
+  // res.json(words)
+});
 
 module.exports = controller;

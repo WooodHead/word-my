@@ -5,8 +5,8 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 
-var index = require('./routes/index');
-var users = require('./routes/users');
+var models = path.join(__dirname, 'model');
+
 var sass = require('node-sass-middleware');
 var mongoose = require('mongoose');
 
@@ -14,7 +14,9 @@ var fs = require('fs');
 
 var app = express();
 
-mongoose.connect('mongodb://localhost/words');
+var connection = mongoose.connect('mongodb://localhost/words').connection;
+connection.on('error', console.log);
+
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -27,7 +29,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
   extended: false
 }));
-app.use(cookieParser());
+app.use(cookieParser())
 
 app.use(sass({
   src: path.join(__dirname, 'client'),
@@ -38,47 +40,28 @@ app.use(sass({
 
 app.use(express.static(path.join(__dirname, 'public')));
 
+console.log('models', models);
+fs.readdirSync(models).forEach(
+  file => {
+    console.log('file', file)
+    require(path.join(models, file));
+
+  }
+);
 
 
-// app.use('/', index);
-// app.use('/users', users);
+
+var index = require('./routes/index');
+var users = require('./routes/users');
+var api = require('./routes/api');
 
 
-var oxfordList = [];
+app.use('/', index);
+app.use('/users', users);
+app.use('/api', api);
 
-function readOxford(cb) {
-  fs.readFile(path.join(__dirname, '/docs/oxford.json'), 'utf-8',
-    function (err, data) {
-      if (err) {
-        console.log('err', err)
-      } else {
-        oxfordList = JSON.parse(data);
-      }
-    });
-}
 
-readOxford();
 
-app.get('/', function (req, res) {
-  console.log('index');
-
-  res.json(oxfordList);
-
-  // fs.readFile(path.join(__dirname, '/docs/oxford.json'), 'utf-8',
-  //   function (err, data) {
-  //     console.log('data', data)
-  //     if (err) {
-  //       console.log('err', err)
-  //     } else {
-  //       var words = JSON.parse(data);
-  //       res.json(words)
-  //     }
-  //   });
-
-  // readOxford(function (words) {
-  //   res.json(words);
-  // })
-});
 
 
 // catch 404 and forward to error handler
@@ -96,7 +79,9 @@ app.use(function (err, req, res, next) {
 
   // render the error page
   res.status(err.status || 500);
-  res.render('error');
+  res.render('error', {
+    error: err
+  });
 });
 
 module.exports = app;

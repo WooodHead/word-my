@@ -6,13 +6,19 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>Document</title>
+  <link rel="stylesheet" href="/css/main.css">
 </head>
 
 <body>
-<h1>test error</h1>
-  <p>
-    <%= error %>
-  </p>
+  <h1>1111</h1>
+  <ul>
+    <% words.forEach(function(item){ %>
+      <li>
+        <%= item.word %>
+      </li>
+      <% }) %>
+  </ul>
+
 </body>
 
 </html>

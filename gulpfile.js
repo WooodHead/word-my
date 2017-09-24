@@ -21,7 +21,7 @@ gulp.task('nodemon', function (cb) {
 gulp.task('browser-sync', ['nodemon'], function () {
   browserSync.init(null, {
     proxy: "http://localhost:8080",
-    files: ['public/**/*.*', 'views/**/*.*'],
+    files: ['public/**/*.*', 'views/**/*.*','controller/**/*.*','model/**/*.*','routes/**/.*.*'],
     browser: "google chrome",
     port: 7000
   });
